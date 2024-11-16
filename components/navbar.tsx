@@ -4,16 +4,12 @@ import {
   NavbarMenu,
   NavbarMenuToggle,
   NavbarBrand,
-  NavbarItem,
-  NavbarMenuItem,
-} from "@nextui-org/navbar";
-import { Link } from "@nextui-org/link";
-import { link as linkStyles } from "@nextui-org/theme";
-import NextLink from "next/link";
-import clsx from "clsx";
+  NavbarMenuItem
+} from '@nextui-org/navbar';
+import { Link } from '@nextui-org/link';
+import NextLink from 'next/link';
 
-import { siteConfig } from "@/config/site";
-//import {Logo} from "@/components/icons";
+import { siteConfig } from '@/config/site';
 
 export const Navbar = () => {
   return (
@@ -21,8 +17,10 @@ export const Navbar = () => {
       <NavbarContent className="basis-1/5 sm:basis-full" justify="center">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
-            <img src="../image/SW-logo.png" width= "150" height="100"/>
-            <p className="font-bold text-inherit" style={{ fontSize: '2rem'}}>&nbsp;&nbsp;&nbsp;서원모터스 견적서</p>
+            <img src="../image/SW-logo.png" width="150" height="100"/>
+            <p className="font-bold text-inherit" style={{ fontSize: '2rem'}}>
+              &nbsp;&nbsp;&nbsp;서원모터스 견적서
+            </p>
           </NextLink>
         </NavbarBrand>
       </NavbarContent>
@@ -30,8 +28,7 @@ export const Navbar = () => {
       <NavbarContent
         className="hidden sm:flex basis-1/5 sm:basis-full"
         justify="end"
-      >
-      </NavbarContent>
+      ></NavbarContent>
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
         <NavbarMenuToggle />
       </NavbarContent>
@@ -43,10 +40,10 @@ export const Navbar = () => {
               <Link
                 color={
                   index === 2
-                    ? "primary"
+                    ? 'primary'
                     : index === siteConfig.navMenuItems.length - 1
-                      ? "danger"
-                      : "foreground"
+                      ? 'danger'
+                      : 'foreground'
                 }
                 href="#"
                 size="lg"

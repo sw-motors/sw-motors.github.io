@@ -1,13 +1,17 @@
-"use client";
+'use client';
 
-import { subtitle, title } from "@/components/primitives";
-import { CheckboxGroup, Checkbox } from "@nextui-org/checkbox";
-import { DatePicker } from "@nextui-org/react";
-import { today, getLocalTimeZone } from "@internationalized/date";
-import { Input } from "@nextui-org/react";
-import { useState, useEffect } from "react";
-
-import { CarPriceGasoline, CarPriceDiesel, CarPriceHybrid, CarOptionsList } from "./option";
+import { subtitle, title } from '@/components/primitives';
+import { CheckboxGroup, Checkbox } from '@nextui-org/checkbox';
+import { DatePicker } from '@nextui-org/react';
+import { today, getLocalTimeZone } from '@internationalized/date';
+import { Input } from '@nextui-org/react';
+import { useState, useEffect, SetStateAction } from 'react';
+import { 
+  CarPriceGasoline, 
+  CarPriceDiesel, 
+  CarPriceHybrid, 
+  CarOptionsList 
+} from './option';
 
 export default function Home() {
   const [carEngine, setCarEngine] = useState([]);
@@ -18,11 +22,11 @@ export default function Home() {
   const [optionPrice, setOptionPrice] = useState(0);
   const [selectOption, setSelectOption] = useState([]);
 
-  const [customerName, setCustomerName] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
   const [Warning, setWarning] = useState(false);
 
-  const EngineChange = (selectedValues) => {
+  const EngineChange = (selectedValues: { slice: (arg0: number, arg1: number) => SetStateAction<never[]>; }) => {
     setCarEngine(selectedValues.slice(0, 1)); // 항상 첫 번째 값만 유지하여 단일 선택
     setCarGrade([]);
     setCarPrice(0);
