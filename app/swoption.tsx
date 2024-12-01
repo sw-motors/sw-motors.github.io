@@ -1,6 +1,3 @@
-import { Image } from '@nextui-org/image';
-import { image } from '@nextui-org/theme';
-
 export const LoopSelect = [
     { value: 'SW9_Low', name: 'SW9(LOW)', price: 0},
     { value: 'StandardEdge', name: '스탠다드 엣지', price: 9900000 },

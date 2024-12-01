@@ -4,32 +4,33 @@ import { CheckboxGroup, Checkbox } from '@nextui-org/checkbox';
 import { DatePicker } from '@nextui-org/react';
 import { today, getLocalTimeZone } from '@internationalized/date';
 import { Input } from '@nextui-org/react';
-import { Image } from '@nextui-org/image';
 import { useState, useEffect } from 'react';
 
 import {
-  CarPriceGasoline,
-  CarPriceDiesel,
-  CarPriceHybrid,
-  CarOptionsList
+CarPriceGasoline,
+CarPriceDiesel,
+CarPriceHybrid,
+CarOptionsList
 } from './option';
 
 import { LoopSelect, PackageSelect } from './swoption';
 
 export default function Home() {
-  const [carEngine, setCarEngine] = useState([]);
-  const [carGrade, setCarGrade] = useState([]);
-  const [carColor, setCarColor] = useState([]);
-  const [carSheet, setCarSheet] = useState([]);
+  const [carEngine, setCarEngine] = useState<string[]>([]);
+  const [carGrade, setCarGrade] = useState<string[]>([]);
+  const [carColor, setCarColor] = useState<string[]>([]);
+  const [carSheet, setCarSheet] = useState<string[]>([]);
   const [carPrice, setCarPrice] = useState(0);
   const [optionPrice, setOptionPrice] = useState(0);
   const [swOption, setSWOption] = useState([]);
-  const [selectedPackage, setSelectedPackage] = useState([]);
-  const [selectOption, setSelectOption] = useState([]);
+  const [selectedPackage, setSelectedPackage] = useState<string[]>([]);
+  const [selectOption, setSelectOption] = useState<string[]>([]);
 
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [Warning, setWarning] = useState(false);
+
+  type SelectedValues = string[];
 
   const resetSelections = () => {
     setOptionPrice(0);
@@ -38,12 +39,12 @@ export default function Home() {
     setSelectedPackage([]);
   };
 
-  const EngineChange = (selectedValues) => {
+  const EngineChange = (selectedValues: SelectedValues) => {
     setCarEngine(selectedValues.slice(0, 1));
     resetSelections();
   };
 
-  const GradeChange = (selectedValues) => {
+  const GradeChange = (selectedValues: SelectedValues) => {
     if (carEngine.length === 0) {
       setWarning(true);
     } else {
@@ -53,13 +54,13 @@ export default function Home() {
     }
   };
 
-  const handleOptionChange = (selectedValues) => {
+  const handleOptionChange = (selectedValues: SelectedValues) => {
     setSelectOption(selectedValues);
 
     let totalOptionPrice = 0;
     selectedValues.forEach((option) => {
       const optItem = CarOptionsList[carGrade[0]]?.find(
-        (item) => item.value === option
+        (item: { value: string; }) => item.value === option
       );
       if (optItem) {
         totalOptionPrice += optItem.price;
@@ -68,14 +69,14 @@ export default function Home() {
     setOptionPrice(totalOptionPrice);
   };
 
-  const handleSWOptionChange = (selectedValues) => {
-    setSWOption(selectedValues.slice(0, 1));
-    setSelectedPackage([]);
-  };
+  //const handleSWOptionChange = (selectedValues: SelectedValues) => {
+  //  setSWOption(selectedValues.slice(0, 1));
+  //  setSelectedPackage([]);
+  //};
 
-  const handlePackageChange = (selectedValue) => {
-    setSelectedPackage(selectedValue.slice(0, 1));
-  };
+  //const handlePackageChange = (selectedValues: SelectedValues) => {
+  //  setSelectedPackage(selectedValue.slice(0, 1));
+  //};
 
   useEffect(() => {
     let totalPrice = 0;
@@ -231,7 +232,12 @@ export default function Home() {
   }
 
   function CarOptions() {
-    const options = CarOptionsList[carGrade[0]] || [];
+    // carGrade[0]을 'Prestige' | 'Noble' | 'Signature' | 'Gravity'로 단언
+    const gradeKey = carGrade[0] as keyof typeof CarOptionsList;
+  
+    // CarOptionsList에서 gradeKey를 안전하게 가져오기
+    const options = CarOptionsList[gradeKey] || [];
+  
     return (
       <>
         <h5>차량 옵션 선택</h5>
@@ -250,6 +256,7 @@ export default function Home() {
       </>
     );
   }
+  
 
   function SWOptions() {
     return (
@@ -281,7 +288,7 @@ export default function Home() {
     // 패키지 리스트를 가져옴
     const packageList = PackageSelect[swOption[0]] || [];
   
-    const filteredPackages = packageList.filter((pkg) => {
+    const filteredPackages = packageList.filter((pkg: { value: string; }) => {
       if (pkg.value === 'TheH') {
         return (
           swOption.includes('SignatureMolding') &&

@@ -17,14 +17,14 @@ export default function Error({
 
   return (
     <div>
-      <h2>Something went wrong!</h2>
+      <h2>서비스 준비 중입니다.</h2>
       <button
         onClick={
           // Attempt to recover by trying to re-render the segment
           () => reset()
         }
       >
-        Try again
+        조금만 기다려주세요.
       </button>
     </div>
   );
