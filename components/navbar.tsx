@@ -4,10 +4,11 @@ import {
   NavbarMenu,
   NavbarMenuToggle,
   NavbarBrand,
-  NavbarMenuItem
+  NavbarMenuItem,
 } from '@nextui-org/navbar';
 import { Link } from '@nextui-org/link';
 import NextLink from 'next/link';
+import { Image } from '@nextui-org/image';
 
 import { siteConfig } from '@/config/site';
 
@@ -17,10 +18,16 @@ export const Navbar = () => {
       <NavbarContent className="basis-1/5 sm:basis-full" justify="center">
         <NavbarBrand as="li" className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
-            <img height="100" src="../image/SW-logo.png" width="150" />
-            <p className="font-bold text-inherit" style={{ fontSize: '2rem' }}>
-              &nbsp;&nbsp;&nbsp;서원모터스 견적서
-            </p>
+          <Image
+            src="../image/sw-log.png"
+            alt="SW 로고"
+            width={70}
+            height={70}
+            style={{ marginRight: '10px' }} // 텍스트와 이미지 사이 간격 조정
+          />
+          <p className="font-bold text-inherit" style={{ fontSize: '2rem', margin: 0 }}>
+            서원모터스 견적서
+          </p>
           </NextLink>
         </NavbarBrand>
       </NavbarContent>
