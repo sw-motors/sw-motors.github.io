@@ -5,7 +5,7 @@ const nextConfig = {
   images: {
     unoptimized: true
   },
-  assetPrefix: isProd ? '/sw-motors-invoice' : '',
+  assetPrefix: isProd ? '/sw-motors-invoice/' : '',
   basePath:  isProd ? "/sw-motors-invoice" : '',
   output: "export"
 };
