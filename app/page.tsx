@@ -1,36 +1,39 @@
 'use client';
 
+import React, { useMemo, useCallback } from 'react';
 import { CheckboxGroup, Checkbox } from '@nextui-org/checkbox';
 import { DatePicker } from '@nextui-org/react';
 import { today, getLocalTimeZone } from '@internationalized/date';
 import { Input } from '@nextui-org/react';
+import { Image } from '@nextui-org/image';
 import { useState, useEffect } from 'react';
 
 import {
-CarPriceGasoline,
-CarPriceDiesel,
-CarPriceHybrid,
-CarOptionsList
+  CarPriceGasoline,
+  CarPriceDiesel,
+  CarPriceHybrid,
+  CarOptionsList
 } from './option';
 
 import { LoopSelect, PackageSelect } from './swoption';
+
+type SelectedValues = string[];
 
 export default function Home() {
   const [carEngine, setCarEngine] = useState<string[]>([]);
   const [carGrade, setCarGrade] = useState<string[]>([]);
   const [carColor, setCarColor] = useState<string[]>([]);
   const [carSheet, setCarSheet] = useState<string[]>([]);
-  const [carPrice, setCarPrice] = useState(0);
-  const [optionPrice, setOptionPrice] = useState(0);
-  const [swOption, setSWOption] = useState([]);
+  const [carPrice, setCarPrice] = useState<number>(0);
+  const [optionPrice, setOptionPrice] = useState<number>(0);
+  const [swOption, setSWOption] = useState<string[]>([]);
   const [selectedPackage, setSelectedPackage] = useState<string[]>([]);
   const [selectOption, setSelectOption] = useState<string[]>([]);
+  const [isTransportSelected, setIsTransportSelected] = useState(false);
 
-  const [customerName, setCustomerName] = useState('');
-  const [customerPhone, setCustomerPhone] = useState('');
-  const [Warning, setWarning] = useState(false);
-
-  type SelectedValues = string[];
+  const [customerName, setCustomerName] = useState<string>('');
+  const [customerPhone, setCustomerPhone] = useState<string>('');
+  const [Warning, setWarning] = useState<boolean>(false);
 
   const resetSelections = () => {
     setOptionPrice(0);
@@ -59,8 +62,8 @@ export default function Home() {
 
     let totalOptionPrice = 0;
     selectedValues.forEach((option) => {
-      const optItem = CarOptionsList[carGrade[0]]?.find(
-        (item: { value: string; }) => item.value === option
+      const optItem = CarOptionsList[carGrade[0] as keyof typeof CarOptionsList]?.find(
+        (item) => item.value === option
       );
       if (optItem) {
         totalOptionPrice += optItem.price;
@@ -69,14 +72,10 @@ export default function Home() {
     setOptionPrice(totalOptionPrice);
   };
 
-  //const handleSWOptionChange = (selectedValues: SelectedValues) => {
-  //  setSWOption(selectedValues.slice(0, 1));
-  //  setSelectedPackage([]);
-  //};
-
-  //const handlePackageChange = (selectedValues: SelectedValues) => {
-  //  setSelectedPackage(selectedValue.slice(0, 1));
-  //};
+  const handleSWOptionChange = (selectedValues: SelectedValues) => {
+    setSWOption(selectedValues.slice(0, 1));
+    setSelectedPackage([]);
+  };
 
   useEffect(() => {
     let totalPrice = 0;
@@ -101,7 +100,7 @@ export default function Home() {
     }
 
     selectOption.forEach((option) => {
-      const optItem = CarOptionsList[carGrade[0]]?.find(
+      const optItem = CarOptionsList[carGrade[0] as keyof typeof CarOptionsList]?.find(
         (item) => item.value === option
       );
       if (optItem) totalPrice += optItem.price;
@@ -113,22 +112,36 @@ export default function Home() {
     });
 
     selectedPackage.forEach((pkg) => {
-      const packageList = PackageSelect[swOption[0]] || [];
+      const packageList = PackageSelect[swOption[0] as keyof typeof PackageSelect] || [];
       const packageItem = packageList.find((item) => item.value === pkg);
       if (packageItem) totalPrice += packageItem.price;
     });
 
+    if (isTransportSelected) {
+      totalPrice += 110000; // 탁송료 추가
+    }
+
     setCarPrice(totalPrice);
-  }, [carEngine, carGrade, carColor, selectOption, swOption, selectedPackage]);
+  }, [carEngine, carGrade, carColor, selectOption, swOption, selectedPackage, isTransportSelected]);
 
   function CustomerInfo() {
     return (
       <>
         <h5>고객명</h5>
-        <Input placeholder="성함" type="text" />
+        <Input
+          placeholder="성함"
+          type="text"
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+        />
         <br />
         <h5>고객 연락처</h5>
-        <Input placeholder="연락처" type="tel" />
+        <Input
+          placeholder="연락처"
+          type="tel"
+          value={customerPhone}
+          onChange={(e) => setCustomerPhone(e.target.value)}
+        />
         <br />
         <h5>견적일</h5>
         <DatePicker
@@ -185,7 +198,7 @@ export default function Home() {
           label="차량 등급마다 선택할 수 있는 색상에 차이가 있어요."
           orientation="horizontal"
           value={carColor}
-          onChange={(selectedValues) => setCarColor(selectedValues.slice(0, 1))} // 단일 선택 유지
+          onChange={(selectedValues) => setCarColor(selectedValues.slice(0, 1))}
         >
           <Checkbox value="color1">스노우 화이트 펄(SWP) (+80,000)</Checkbox>
           {!carGrade.includes('Gravity') && (
@@ -204,40 +217,10 @@ export default function Home() {
       </>
     );
   }
-  function CarSheet() {
-    return (
-      <>
-        <h5>시트 색상</h5>
-        <CheckboxGroup
-          label="차량 엔진마다 선택할 수 있는 색상에 차이가 있어요."
-          orientation="horizontal"
-          value={carSheet}
-          onChange={(selectedValues) => setCarSheet(selectedValues.slice(0, 1))}
-        >
-          <Checkbox value="sheet1">토프</Checkbox>
-          {!carGrade.includes('Prestige') && (
-            <>
-              <Checkbox value="sheet2">코튼 베이지</Checkbox>
-              {!carGrade.includes('Noble') &&
-                !carEngine.includes('gasoline') &&
-                !carEngine.includes('diesel') &&
-                !carEngine.includes('Signature') && (
-                  <Checkbox value="sheet3">네이비 그레이</Checkbox>
-                )}
-            </>
-          )}
-        </CheckboxGroup>
-      </>
-    );
-  }
 
   function CarOptions() {
-    // carGrade[0]을 'Prestige' | 'Noble' | 'Signature' | 'Gravity'로 단언
     const gradeKey = carGrade[0] as keyof typeof CarOptionsList;
-  
-    // CarOptionsList에서 gradeKey를 안전하게 가져오기
     const options = CarOptionsList[gradeKey] || [];
-  
     return (
       <>
         <h5>차량 옵션 선택</h5>
@@ -256,7 +239,6 @@ export default function Home() {
       </>
     );
   }
-  
 
   function SWOptions() {
     return (
@@ -266,7 +248,7 @@ export default function Home() {
           label="SW 옵션을 선택해주세요."
           orientation="horizontal"
           value={swOption}
-          onChange={(selectedValues) => setSWOption(selectedValues.slice(0, 1))} // 단일 선택
+          onChange={handleSWOptionChange}
         >
           {LoopSelect.map((option) => (
             <Checkbox key={option.value} value={option.value}>
@@ -274,67 +256,115 @@ export default function Home() {
             </Checkbox>
           ))}
         </CheckboxGroup>
-        {/* 선택된 SW 옵션에 따라 패키지 옵션 표시 */}
         {swOption.length > 0 && <PackageOptions />}
       </>
     );
   }
-  
-  function PackageOptions() {
-    const isGasolineAndValidGrade =
+
+function PackageOptions() {
+  const PackageImage = React.memo(({ src, alt }: { src: string; alt: string }) => {
+    return (
+      <Image
+        src={src}
+        alt={alt}
+        style={{
+          width: '550px',
+          height: '250px',
+          objectFit: 'contain',
+          marginTop: '10px',
+          display: 'block',
+        }}
+      />
+    );
+  });
+
+  const isGasolineAndValidGrade = useMemo(
+    () =>
       carEngine.includes('gasoline') &&
-      ['Noble', 'Signature', 'Gravity'].some((grade) => carGrade.includes(grade));
-  
-    // 패키지 리스트를 가져옴
-    const packageList = PackageSelect[swOption[0]] || [];
-  
-    const filteredPackages = packageList.filter((pkg: { value: string; }) => {
+      ['Noble', 'Signature', 'Gravity'].some((grade) => carGrade.includes(grade)),
+    [carEngine, carGrade]
+  );
+
+  const filteredPackages = useMemo(() => {
+    const packageList = PackageSelect[swOption[0] as keyof typeof PackageSelect] || [];
+    return packageList.filter((pkg) => {
       if (pkg.value === 'TheH') {
-        return (
-          swOption.includes('SignatureMolding') &&
-          isGasolineAndValidGrade
-        );
+        return swOption.includes('SignatureMolding') && isGasolineAndValidGrade;
       }
       return true;
     });
+  }, [swOption, isGasolineAndValidGrade]);
+
+  const handlePackageChange = useCallback(
+    (selectedValues: SelectedValues) => {
+      setSelectedPackage(selectedValues.slice(0, 1));
+    },
+    [setSelectedPackage]
+  );
+
+  return (
+    <>
+      <br />
+      <h5>패키지 옵션 선택</h5>
+      <CheckboxGroup
+        label="패키지를 선택해주세요."
+        orientation="horizontal"
+        value={selectedPackage}
+        onChange={handlePackageChange}
+      >
+        {filteredPackages.map((pkg) => (
+          <div
+            key={pkg.value}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              margin: '10px',
+            }}
+          >
+            <Checkbox value={pkg.value}>
+              {pkg.name} (+{pkg.price.toLocaleString()} 원)
+            </Checkbox>
+            <PackageImage
+              src={`/image/${pkg.value}.png`} // 패키지의 이미지 경로
+              alt={pkg.name}
+            />
+          </div>
+        ))}
+      </CheckboxGroup>
+    </>
+  );
+}
+
+  
+  
+  function Transport() {
+    const handleTransportChange = () => {
+      const fee = 110000;
+      if (!isTransportSelected) {
+        setCarPrice((prevPrice) => prevPrice + fee); // 체크하면 금액 추가
+      } else {
+        setCarPrice((prevPrice) => prevPrice - fee); // 체크 해제하면 금액 감소
+      }
+      setIsTransportSelected(!isTransportSelected); // 상태 토글
+    };
   
     return (
       <>
-        <br />
-        <h5>패키지 옵션 선택</h5>
-        <CheckboxGroup
-          label="패키지를 선택해주세요."
-          orientation="horizontal"
-          value={selectedPackage}
-          onChange={(selectedValues) => setSelectedPackage(selectedValues.slice(0, 1))} // 단일 선택
+        <h5>탁송료 11만원이 추가됩니다.</h5>
+        <Checkbox
+          isSelected={isTransportSelected}
+          onChange={handleTransportChange}
         >
-          {filteredPackages.map((pkg) => (
-            <div key={pkg.value} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '10px' }}>
-              <Checkbox value={pkg.value}>
-                {pkg.name} (+{pkg.price.toLocaleString()} 원)
-              </Checkbox>
-              <img
-                src={`/image/${pkg.value}.png`} // 예: 패키지의 이미지 경로
-                alt={pkg.name}
-                style={{ width: '550px', height: '250px', objectFit: 'contain', marginTop: '10px', display: 'block' }}
-              />
-            </div>
-          ))}
-        </CheckboxGroup>
+          소하리~서울 탁송료 (+110,000)
+        </Checkbox>
       </>
     );
   }
-  
   return (
     <section className="mx-4 mt-2 flex flex-col gap-2">
-    {/*<h1 className={title({ color: "blue" })}>-제목-</h1>*/}
       <br />
-      <CustomerInfo
-        customerName={customerName}
-        customerPhone={customerPhone}
-        setCustomerName={setCustomerName}
-        setCustomerPhone={setCustomerPhone}
-      />
+      <CustomerInfo />
       <br />
       <Engine />
       {Warning && <p style={{ color: 'red' }}>엔진을 먼저 선택해주세요.</p>}
@@ -343,12 +373,11 @@ export default function Home() {
       <br />
       <CarColor />
       <br />
-      <CarSheet />
-      <br />
       <CarOptions />
       <br />
       <SWOptions />
       <br />
+      <Transport />
       <br />
       <h5>총 금액: {carPrice.toLocaleString()} 원</h5>
     </section>
