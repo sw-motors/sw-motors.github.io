@@ -288,8 +288,7 @@ export default function Home() {
     );
   }
 
-function PackageOptions() {
-  const PackageImage = React.memo(({ src, alt }: { src: string; alt: string }) => {
+  function PackageImage({ src, alt }: { src: string; alt: string }) {
     return (
       <Image
         src={src}
@@ -303,66 +302,63 @@ function PackageOptions() {
         }}
       />
     );
-  });
-
-  const isGasolineAndValidGrade = useMemo(
-    () =>
+  }
+  
+  function PackageOptions() {
+    const isGasolineAndValidGrade =
       carEngine.includes('gasoline') &&
-      ['Noble', 'Signature', 'Gravity'].some((grade) => carGrade.includes(grade)),
-    [carEngine, carGrade]
-  );
-
-  const filteredPackages = useMemo(() => {
-    const packageList = PackageSelect[swOption[0] as keyof typeof PackageSelect] || [];
-    return packageList.filter((pkg) => {
+      ['Noble', 'Signature', 'Gravity'].some((grade) => carGrade.includes(grade));
+  
+    const packageList =
+      swOption.length > 0 && swOption[0]
+        ? PackageSelect[swOption[0] as keyof typeof PackageSelect] || []
+        : [];
+  
+    const filteredPackages = packageList.filter((pkg: { value: string }) => {
       if (pkg.value === 'TheH') {
-        return swOption.includes('SignatureMolding') && isGasolineAndValidGrade;
+        return (
+          swOption.includes('SignatureMolding') &&
+          isGasolineAndValidGrade
+        );
       }
       return true;
     });
-  }, [swOption, isGasolineAndValidGrade]);
-
-  const handlePackageChange = useCallback(
-    (selectedValues: SelectedValues) => {
-      setSelectedPackage(selectedValues.slice(0, 1));
-    },
-    [setSelectedPackage]
-  );
-
-  return (
-    <>
-      <br />
-      <h5>패키지 옵션 선택</h5>
-      <CheckboxGroup
-        label="패키지를 선택해주세요."
-        orientation="horizontal"
-        value={selectedPackage}
-        onChange={handlePackageChange}
-      >
-        {filteredPackages.map((pkg) => (
-          <div
-            key={pkg.value}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              margin: '10px',
-            }}
-          >
-            <Checkbox value={pkg.value}>
-              {pkg.name} (+{pkg.price.toLocaleString()} 원)
-            </Checkbox>
-            <PackageImage
-              src={`/image/${pkg.value}.png`} // 패키지의 이미지 경로
-              alt={pkg.name}
-            />
-          </div>
-        ))}
-      </CheckboxGroup>
-    </>
-  );
-}
-
+  
+    return (
+      <>
+        <br />
+        <h5>패키지 옵션 선택</h5>
+        <CheckboxGroup
+          label="패키지를 선택해주세요."
+          orientation="horizontal"
+          value={selectedPackage}
+          onChange={(selectedValues) =>
+            setSelectedPackage(selectedValues.slice(0, 1))
+          } // 단일 선택
+        >
+          {filteredPackages.map((pkg) => (
+            <div
+              key={pkg.value}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                margin: '10px',
+              }}
+            >
+              <Checkbox value={pkg.value}>
+                {pkg.name} (+{pkg.price.toLocaleString()} 원)
+              </Checkbox>
+              <PackageImage
+                src={`/image/${pkg.value}.png`} // 예: 패키지의 이미지 경로
+                alt={pkg.name}
+              />
+            </div>
+          ))}
+        </CheckboxGroup>
+      </>
+    );
+  }
   
   
   function Transport() {
