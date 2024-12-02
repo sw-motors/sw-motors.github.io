@@ -218,6 +218,33 @@ export default function Home() {
     );
   }
 
+  function CarSheet() {
+    return (
+      <>
+        <h5>시트 색상</h5>
+        <CheckboxGroup
+          label="차량 엔진마다 선택할 수 있는 색상에 차이가 있어요."
+          orientation="horizontal"
+          value={carSheet}
+          onChange={(selectedValues) => setCarSheet(selectedValues.slice(0, 1))}
+        >
+          <Checkbox value="sheet1">토프</Checkbox>
+          {!carGrade.includes('Prestige') && (
+            <>
+              <Checkbox value="sheet2">코튼 베이지</Checkbox>
+              {!carGrade.includes('Noble') &&
+                !carEngine.includes('gasoline') &&
+                !carEngine.includes('diesel') &&
+                !carEngine.includes('Signature') && (
+                  <Checkbox value="sheet3">네이비 그레이</Checkbox>
+                )}
+            </>
+          )}
+        </CheckboxGroup>
+      </>
+    );
+  }
+  
   function CarOptions() {
     const gradeKey = carGrade[0] as keyof typeof CarOptionsList;
     const options = CarOptionsList[gradeKey] || [];
@@ -372,6 +399,8 @@ function PackageOptions() {
       <CarGrade />
       <br />
       <CarColor />
+      <br />
+      <CarSheet />
       <br />
       <CarOptions />
       <br />
