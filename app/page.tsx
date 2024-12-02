@@ -288,19 +288,36 @@ export default function Home() {
     );
   }
 
-  function PackageImage({ src, alt }: { src: string; alt: string }) {
+  type PackageImageProps = {
+    src: string; // 이미지 경로 (필수)
+    alt?: string; // 이미지 설명 (선택)
+    width?: string; // 너비 (옵션)
+    height?: string; // 높이 (옵션)
+  };
+  
+  function PackageImage({
+    src,
+    alt = 'Image not available', // 기본값 제공
+    width = '550px',
+    height = '250px',
+  }: PackageImageProps) {
     return (
-      <Image
-        src={src}
-        alt={alt}
-        style={{
-          width: '550px',
-          height: '250px',
-          objectFit: 'contain',
-          marginTop: '10px',
-          display: 'block',
-        }}
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Image
+          src={src}
+          alt={alt}
+          style={{
+            width,
+            height,
+            objectFit: 'contain',
+            marginTop: '10px',
+            display: 'block',
+            borderRadius: '8px', // 추가 스타일 옵션
+            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', // 그림자 추가
+          }}
+        />
+        {alt && <p style={{ marginTop: '5px', fontSize: '14px', color: '#555' }}>{alt}</p>}
+      </div>
     );
   }
   
