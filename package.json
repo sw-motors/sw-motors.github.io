@@ -1,5 +1,6 @@
 {
-	"name": "next-app-template",
+	"homepage": "https://sw-motors.github.io/app",
+	"name": "swmotors-invoice",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
